@@ -12,6 +12,11 @@
     "typescript",
     "sass"
   ],
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "main": "main.js",
   "private": true,
   "scripts": {
@@ -48,8 +53,6 @@
     "@angular/platform-browser": "7.2.7",
     "@angular/platform-browser-dynamic": "7.2.7",
     "@angular/router": "7.2.7",
-    "@ngx-translate/core": "11.0.1",
-    "@ngx-translate/http-loader": "4.0.0",
     "@types/jasmine": "2.8.7",
     "@types/jasminewd2": "2.0.3",
     "@types/node": "8.9.4",
@@ -69,8 +72,8 @@
     "karma-jasmine-html-reporter": "1.4.0",
     "mocha": "6.0.2",
     "npm-run-all": "4.1.5",
-    "spectron": "5.0.0",
     "rxjs": "6.4.0",
+    "spectron": "5.0.0",
     "ts-node": "7.0.1",
     "tslint": "5.11.0",
     "typescript": "3.2.4",
@@ -81,6 +84,7 @@
   "dependencies": {
     "@aws-amplify/auth": "^1.2.18",
     "bootstrap": "^4.3.1",
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "jasmine": "^3.3.1"
   }
 }

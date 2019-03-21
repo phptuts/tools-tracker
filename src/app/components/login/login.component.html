@@ -1,0 +1,50 @@
+
+<div class="container">
+  <div class="row">
+    <div style="left: 15px;" class="form-group col-md-12">
+      <h1 >Tool Tracker</h1>
+    </div>
+  </div>
+  <div class="row">
+    <form  [formGroup]="form" class="col-md-12" (submit)="submit()">
+      <div class="form-group col-md-12">
+        <label for="email">Email</label>
+        <input type="email" formControlName="email" id="email"
+               class="form-control"
+               [ngClass]="{
+                'is-invalid':showError('email'),
+                'is-warning': form.get('email').pending
+               }"/>
+        <div *ngIf="showError('email') " class="invalid-feedback">
+          <span *ngIf="hasErrorType('email', 'required')">Email is required</span>
+          <span *ngIf="hasErrorType('email', 'email')">Invalid Email!</span>
+          <span *ngIf="hasErrorType('email', 'emailExists')">Email exists!</span>
+        </div>
+        <div class="warning-feedback" *ngIf="form.get('email').pending" >
+          Validating Email
+        </div>
+      </div>
+
+      <div class="form-group col-md-12">
+        <label for="password">Password</label>
+        <input type="password" formControlName="password" id="password"
+               class="form-control"
+               [ngClass]="{ 'is-invalid': showError('password') }"/>
+        <div *ngIf="showError('password')" class="invalid-feedback">
+          <div *ngIf="hasErrorType('password', 'required')">Password is required</div>
+          <div *ngIf="hasErrorType('password', 'minLength')">Password min length is 5 characters</div>
+        </div>
+      </div>
+      <!-- Specific Observables For Each thing -->
+      <div class="form-group col-md-12">
+        <button  [disabled]="!canSubmit()" class="btn-right btn-primary pull-right">Login</button>
+      </div>
+
+      <div id="error-message" *ngIf="errorMessage"  class="alert alert-danger" >
+        <strong>Error!</strong> {{ errorMessage }}
+      </div>
+    </form>
+  </div>
+</div>
+
+
