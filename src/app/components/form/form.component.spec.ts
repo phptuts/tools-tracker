@@ -113,6 +113,7 @@ describe(FormComponent.name, () => {
 
     it('should return that error message needs to be displayed on field', () => {
         formComponent.form.get('email').setValue('');
+        formComponent.form.get('email').touched = true;
         formComponent.form.updateValueAndValidity();
         expect(formComponent.showError('email')).toBeTruthy();
 
