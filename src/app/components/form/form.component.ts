@@ -1,12 +1,17 @@
 import { FormGroup } from '@angular/forms';
+import { Observable, of, Subject } from 'rxjs';
+import { catchError, delay, take, takeUntil, tap } from 'rxjs/operators';
+import { OnDestroy } from '@angular/core';
 
-export abstract class FormComponent {
+export abstract class FormComponent implements OnDestroy {
+
+    private unsub: Subject<any> = new Subject();
 
     protected form: FormGroup;
 
     protected submitting = false;
 
-    protected errorMessage = '';
+    protected errorMessage: string;
 
     /**
      * Returns true if the form can be submitted
@@ -20,7 +25,7 @@ export abstract class FormComponent {
      */
     public showError(fieldName: string): boolean {
         return !this.form.get(fieldName).valid && this.form.get(fieldName).touched
-        && !this.form.get(fieldName).pending;
+            && !this.form.get(fieldName).pending;
     }
 
     /**
@@ -33,34 +38,45 @@ export abstract class FormComponent {
     /**
      * submits the form request to the server
      */
-    public async submit() {
+    public submit() {
         if (!this.canSubmit()) {
             return;
         }
 
         this.submitting = true;
 
-        try {
-            this.errorMessage = await this.request();
-        } catch (e) {
-            this.errorMessage = e.message;
-        }
+        this.request()
+            .pipe(
+                takeUntil(this.unsub),
+                catchError(err =>  of(err.message)),
+                take(1),
+                tap(err => {
+                    this.submitting = false;
 
-        this.submitting = false;
+                    if (err) {
+                        this.errorMessage = err;
+                        return;
+                    }
 
-        if (!this.errorMessage) {
-            this.success();
-            return;
-        }
+                    this.success();
+                }),
+            ).subscribe();
     }
 
     /**
      * The function that makes the request to the server
      */
-    protected abstract async request(): Promise<undefined | string>;
+    protected abstract request(): Observable<undefined | string>;
 
     /**
      * The function that runs if everything was successful
      */
     protected abstract success(): void;
+
+    ngOnDestroy(): void {
+        this.unsub.next();
+        this.unsub.complete();
+    }
+
+
 }

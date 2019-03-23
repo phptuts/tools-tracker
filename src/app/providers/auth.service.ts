@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export abstract class AuthService {
 
-    public abstract async signIn( email: string, password: string ): Promise<undefined | string>;
+    public abstract signIn( email: string, password: string ): Observable<undefined | string>;
 
-    public abstract async doesEmailExist(email: string): Promise<boolean>;
+    public abstract doesEmailExist(email: string): Observable<boolean>;
 }

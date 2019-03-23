@@ -3,6 +3,7 @@ import { FormComponent } from '../form/form.component';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../providers/auth.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -32,7 +33,7 @@ export class LoginComponent extends FormComponent {
         super();
     }
 
-    public async request(): Promise<string | undefined> {
+    public request(): Observable<string | undefined> {
         return this.authService.signIn(
             this.form.get('email').value,
             this.form.get('password').value

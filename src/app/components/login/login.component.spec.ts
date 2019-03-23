@@ -8,14 +8,15 @@ import { routes } from '../../app-routing.module';
 import { AuthService } from '../../providers/auth.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HomeComponent } from '../home/home.component';
+import { Observable, of } from 'rxjs';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
 
     const authService: Partial<AuthService> = {
-        signIn(email: string, password: string): Promise<string | undefined> {
-            return Promise.resolve(undefined);
+        signIn(email: string, password: string): Observable<string | undefined> {
+            return of(undefined);
         }
     };
 
@@ -34,10 +35,10 @@ describe('LoginComponent', () => {
     beforeEach(async(() => {
 
         routerSpy = spyOn(router, 'navigate')
-            .and.returnValue(Promise.resolve(true));
+            .and.returnValue(of(true));
 
         authServiceSpy = spyOn(authService, 'signIn')
-            .and.callFake(() => Promise.resolve(errorMessage));
+            .and.callFake(() => of(errorMessage));
 
         TestBed.configureTestingModule({
             declarations: [ LoginComponent, HomeComponent ],

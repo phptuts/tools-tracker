@@ -25,3 +25,10 @@ $form-feedback-info-color: #17a2b8 !default;
   background-size: calc(.75em + .375rem) calc(.75em + .375rem);
   box-shadow: 0 0 0 0.2rem rgba(255,193,7,.25);
 }
+button > i.fa {
+  font-size: 24px;
+}
+
+.btn-form {
+  text-align: right;
+}

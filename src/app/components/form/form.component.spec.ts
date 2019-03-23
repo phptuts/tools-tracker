@@ -1,7 +1,9 @@
 import 'jasmine';
 import { FormComponent } from './form.component';
-import { FormBuilder, FormControl, FormGroup, Validator, Validators } from '@angular/forms';
-import { async, fakeAsync, tick } from '@angular/core/testing';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 describe(FormComponent.name, () => {
     let formComponent: TestComponent;
@@ -32,12 +34,11 @@ describe(FormComponent.name, () => {
 
     it('test form submission', fakeAsync((done) => {
 
-        requestSpy.and.returnValue(new Promise((res, rej) => {
-            // Tests that before the request
-            // is processed that user can not submit the form
-            expect(formComponent.canSubmit()).toBeFalsy();
-            res(undefined);
-        }));
+        requestSpy.and.returnValue(of(undefined).pipe(
+            tap(() => {
+                expect(formComponent.canSubmit()).toBeFalsy();
+            })
+        ));
 
         successSpy.and.returnValue(null);
 
@@ -58,12 +59,11 @@ describe(FormComponent.name, () => {
     }));
 
     it('should not be able to handle unexpected error message', fakeAsync(() => {
-            requestSpy.and.returnValue(new Promise((res, rej) => {
-                // Tests that before the request
-                // is processed that user can not submit the form
+        requestSpy.and.returnValue(of('There was an error.').pipe(
+            tap(() => {
                 expect(formComponent.canSubmit()).toBeFalsy();
-                rej(new Error('There was an error.'));
-            }));
+            })
+        ));
 
             successSpy.and.returnValue(null);
 
@@ -83,33 +83,6 @@ describe(FormComponent.name, () => {
             expect(formComponent[ 'errorMessage' ]).toBe('There was an error.');
         })
     );
-
-    it('should not be able to handle expected error message', fakeAsync(() => {
-        requestSpy.and.returnValue(new Promise((res, rej) => {
-            // Tests that before the request
-            // is processed that user can not submit the form
-            expect(formComponent.canSubmit()).toBeFalsy();
-            res('There was an error.');
-        }));
-
-        successSpy.and.returnValue(null);
-
-        formComponent.form.get('email').setValue('gl@sadf.com');
-        formComponent[ 'submitting' ] = false;
-
-        expect(formComponent.canSubmit()).toBeTruthy();
-
-        formComponent.submit();
-        tick(1); // resolves the promise
-
-        // Tests the user can submit and the methods have been called
-        expect(formComponent.canSubmit()).toBeTruthy();
-
-        expect(requestSpy).toHaveBeenCalled();
-        expect(successSpy).not.toHaveBeenCalled();
-        expect(formComponent[ 'errorMessage' ]).toBe('There was an error.');
-
-    }));
 
     it('should return that error message needs to be displayed on field', () => {
         formComponent.form.get('email').setValue('');
@@ -143,7 +116,7 @@ class TestComponent extends FormComponent {
     }
 
 
-    public async request(): Promise<string | undefined> {
+    public request(): Observable<string | undefined> {
         return;
     }
 

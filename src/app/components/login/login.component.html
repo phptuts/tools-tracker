@@ -36,13 +36,18 @@
         </div>
       </div>
       <!-- Specific Observables For Each thing -->
-      <div class="form-group col-md-12">
-        <button  [disabled]="!canSubmit()" class="btn-right btn-primary pull-right">Login</button>
+      <div class="form-group col-md-12 btn-form">
+        <button  [disabled]="!canSubmit()" class="btn btn-lg btn-primary">Login
+          <i class="fa fa-spinner fa-spin" *ngIf="submitting" ></i>
+        </button>
       </div>
 
-      <div id="error-message" *ngIf="errorMessage"  class="alert alert-danger" >
-        <strong>Error!</strong> {{ errorMessage }}
+      <div class="form-group col-md-12" *ngIf="errorMessage">
+        <div id="error-message"   class="alert alert-danger" >
+          <strong>Error!</strong> {{ errorMessage }}
+        </div>
       </div>
+
     </form>
   </div>
 </div>
