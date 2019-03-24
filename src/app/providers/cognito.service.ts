@@ -1,8 +1,9 @@
 import { AuthService } from './auth.service';
-import { AuthClass } from '@aws-amplify/auth';
+import { AuthClass, CognitoUser } from '@aws-amplify/auth';
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+
 
 @Injectable()
 export class CognitoService implements AuthService {
@@ -46,5 +47,26 @@ export class CognitoService implements AuthService {
             map(() => false),
             catchError(err => of(err.code !== 'UserNotFoundException'))
         );
+    }
+
+    public signUp(email: string, password: string): Observable<string | undefined> {
+        return from(this.awsAuth.signUp({username: email, password}))
+            .pipe(
+                map(() => undefined),
+                catchError(err => of(err.message))
+            );
+    }
+
+    /**
+     * Confirms the user's email address
+     */
+    public confirmEmailAddress(passCode: string): Observable<string | undefined> {
+        return from(this.awsAuth.currentAuthenticatedUser())
+            .pipe(
+                map((user: CognitoUser) => user.getUsername()),
+                switchMap((email: string) => from(this.awsAuth.confirmSignUp(email, passCode))),
+                map(() => undefined),
+                catchError(err => of(err.message))
+            );
     }
 }
