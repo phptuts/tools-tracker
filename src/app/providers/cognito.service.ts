@@ -53,6 +53,7 @@ export class CognitoService implements AuthService {
         return from(this.awsAuth.signUp({username: email, password}))
             .pipe(
                 map(() => undefined),
+                tap(() => localStorage.setItem('email_signup', email)),
                 catchError(err => of(err.message))
             );
     }
@@ -61,12 +62,12 @@ export class CognitoService implements AuthService {
      * Confirms the user's email address
      */
     public confirmEmailAddress(passCode: string): Observable<string | undefined> {
-        return from(this.awsAuth.currentAuthenticatedUser())
+        return of(localStorage.getItem('email_signup'))
             .pipe(
-                map((user: CognitoUser) => user.getUsername()),
                 switchMap((email: string) => from(this.awsAuth.confirmSignUp(email, passCode))),
+                tap(() => localStorage.removeItem('email_signup')),
                 map(() => undefined),
-                catchError(err => of(err.message))
+                catchError(err =>  of(err.message))
             );
     }
 }

@@ -2,7 +2,7 @@
 <div class="container">
   <div class="row">
     <div style="left: 15px;" class="form-group col-md-12">
-      <h1 >Tool Tracker - Login</h1>
+      <h1 >Tool Tracker - Sign Up</h1>
     </div>
   </div>
   <div class="row">
@@ -18,6 +18,7 @@
         <div *ngIf="showError('email') " class="invalid-feedback">
           <span *ngIf="hasErrorType('email', 'required')">Email is required</span>
           <span *ngIf="hasErrorType('email', 'email')">Invalid Email!</span>
+          <span *ngIf="hasErrorType('email', 'emailExists')">Email exists!</span>
         </div>
         <div class="warning-feedback" *ngIf="form.get('email').pending" >
           Validating Email
@@ -36,7 +37,7 @@
       </div>
       <!-- Specific Observables For Each thing -->
       <div class="form-group col-md-12 btn-form">
-        <button  [disabled]="!canSubmit()" class="btn btn-lg btn-primary">Login
+        <button  [disabled]="!canSubmit()" class="btn btn-lg btn-primary">Sign Up
           <i class="fa fa-spinner fa-spin" *ngIf="submitting" ></i>
         </button>
       </div>
@@ -48,7 +49,6 @@
       </div>
 
     </form>
-    <a routerLink="/sign-up" >Sign up</a>
   </div>
 </div>
 

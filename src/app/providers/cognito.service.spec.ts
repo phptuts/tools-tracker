@@ -82,6 +82,8 @@ describe('Cognito Service', () => {
         cognitoService = new CognitoService(awsService);
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('email_signup');
+
     });
 
     describe('signIn', () => {
@@ -158,6 +160,8 @@ describe('Cognito Service', () => {
 
     describe('confirmEmailAddress', () => {
         it ('should return an error message in subscribe', fakeAsync(() => {
+            localStorage.setItem('email_signup',  'auth_user@gmail.com');
+
             cognitoService
                 .confirmEmailAddress('error code')
                 .subscribe(err => expect(err).toBe('Error Message'));
@@ -168,6 +172,8 @@ describe('Cognito Service', () => {
         }));
 
         it ('should return undefined if successful', fakeAsync(() => {
+            localStorage.setItem('email_signup',  'auth_user@gmail.com');
+
             cognitoService
                 .confirmEmailAddress('success')
                 .subscribe(err => expect(err).toBeUndefined());

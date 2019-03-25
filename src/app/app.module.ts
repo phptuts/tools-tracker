@@ -19,6 +19,8 @@ import { AppConfig } from '../environments/environment';
 import { AuthService } from './providers/auth.service';
 import { CognitoService } from './providers/cognito.service';
 import { LoginComponent } from './components/login/login.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
+import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 
 // AoT requires an exported function for factories
 
@@ -29,7 +31,9 @@ import { LoginComponent } from './components/login/login.component';
         AppComponent,
         HomeComponent,
         WebviewDirective,
-        LoginComponent
+        LoginComponent,
+        SignUpComponent,
+        VerifyEmailComponent,
     ],
     imports: [
         BrowserModule,
