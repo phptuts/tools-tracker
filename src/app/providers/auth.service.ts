@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { User } from '../model/user';
 
 @Injectable()
 export abstract class AuthService {
 
-    public abstract readonly user$: Observable<boolean>;
+    public abstract readonly user$: Observable<User|undefined>;
 
     public abstract signUp (email: string, password: string): Observable<undefined | string>;
 
