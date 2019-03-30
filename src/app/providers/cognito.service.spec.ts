@@ -314,7 +314,6 @@ describe('Cognito Service', () => {
         it('should return the latest cognito user', fakeAsync(() => {
             let counter = 0;
             const sub = cognitoService.user$.subscribe(user => {
-                console.log(user, 'actual user being returned');
                 counter += 1;
                 expect(user.email).toBe('user@gmail.com');
                 expect(user.id).toBe('user_id');
