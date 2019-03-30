@@ -2,7 +2,7 @@ import { AuthService } from './auth.service';
 import { AuthClass, CognitoUser } from '@aws-amplify/auth';
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { Injectable } from '@angular/core';
-import { forkJoin, from, interval, merge, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, from, interval, merge, Observable, of } from 'rxjs';
 import {
     catchError,
     distinctUntilChanged,
@@ -17,37 +17,43 @@ import * as deepEqual from 'deep-equal';
 @Injectable()
 export class CognitoService implements AuthService {
 
-    private readonly checkUserSubject = new Subject();
+    private readonly checkUserSubject = new BehaviorSubject(undefined);
 
     public readonly user$: Observable<User> = merge<User | undefined>(
         this.checkUserSubject.asObservable(),
-        interval(60 * 60 * 2 * 1000)
+        interval( 1000)
     ).pipe(
         // currentAuthenticatedUser automatically handles the refresh stuff so we don't have to worry about it.
         switchMap(() => from(this.awsAuth.currentAuthenticatedUser())),
-        switchMap((user: CognitoUser) =>
-            forkJoin(from(this.awsAuth.userAttributes(user)), of(user))
-        ),
-        map((returnValue: [ CognitoUserAttribute[], CognitoUser ]) => {
-            const attributes = returnValue[ 0 ]
+        switchMap((user: CognitoUser) => from(this.awsAuth.userAttributes(user))),
+        map((cognitoAttributes: CognitoUserAttribute[] ) => {
+            const attributes = cognitoAttributes
                 .map((attribute: CognitoUserAttribute) => {
                     return {
-                        name: attribute.getValue(),
-                        value: attribute.getName()
+                        name: attribute.getName(),
+                        value: attribute.getValue()
                     };
                 });
 
+            const [email] = attributes
+                            .filter(attribute => attribute.name === 'email')
+                .map(attribute => attribute.value);
+
+
+            const [id] = attributes
+                            .filter(attribute => attribute.name === 'sub')
+                .map(attribute => attribute.value);
+
             return {
                 attributes,
-                email: returnValue[1].getUsername(),
-                username: returnValue[1].getUsername()
+                email,
+                id
             };
         }),
         catchError(() => of(undefined)),
         distinctUntilChanged((userA: User | undefined, userB: User | undefined) => {
-           return deepEqual(userB, userA);
+            return deepEqual.default(userB, userA);
         })
-
     );
 
     constructor(private awsAuth: AuthClass) { }
@@ -73,6 +79,7 @@ export class CognitoService implements AuthService {
                     localStorage.setItem('jwt_token', jwtToken);
                     localStorage.setItem('refresh_token', refreshToken);
                 }),
+                tap(() => this.checkUserSubject.next(undefined)),
                 map(() => undefined),
                 catchError(err => of(err.message))
             );
@@ -107,7 +114,13 @@ export class CognitoService implements AuthService {
      * Confirms the user's email address
      */
     public confirmEmailAddress(passCode: string): Observable<string | undefined> {
-        return from(this.awsAuth.confirmSignUp(localStorage.getItem('email_address'), passCode))
+        const email = localStorage.getItem('email_address');
+
+        if (!email) {
+            return of('Invalid email or code, please try again.');
+        }
+
+        return from(this.awsAuth.confirmSignUp(email, passCode))
             .pipe(
                 tap(() => localStorage.removeItem('email_address')),
                 map(() => undefined),
@@ -134,7 +147,7 @@ export class CognitoService implements AuthService {
 
         const email = localStorage.getItem('email_address');
 
-        if (email) {
+        if (!email) {
             return of('Invalid email or code, please try again.');
         }
 

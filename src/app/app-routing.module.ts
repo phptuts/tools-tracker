@@ -24,7 +24,7 @@ export const routes: Routes = [
     },
     {
         path: '',
-        component: SignUpComponent
+        component: LoginComponent
     }
 ];
 

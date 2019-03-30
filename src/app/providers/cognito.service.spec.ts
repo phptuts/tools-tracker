@@ -2,15 +2,16 @@ import 'jasmine';
 import { AuthClass, CognitoUser } from '@aws-amplify/auth';
 import { ConfirmSignUpOptions, SignInOpts, SignUpParams } from '@aws-amplify/auth/lib/types';
 import { CognitoService } from './cognito.service';
-import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { instance, mock, when } from 'ts-mockito';
+import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 describe('Cognito Service', () => {
 
     let confirmSignUpErrorCode = '';
 
     const cognitoUserMocked = mock(CognitoUser);
-    when(cognitoUserMocked.getUsername()).thenReturn('auth_user@gmail.com');
+    when(cognitoUserMocked.getUsername()).thenReturn('user_id');
 
     const awsUser = {
         getSignInUserSession() {
@@ -42,6 +43,16 @@ describe('Cognito Service', () => {
                 });
             }
             return Promise.resolve(awsUser);
+        },
+
+        userAttributes(user: CognitoUser) {
+            const attributes = [];
+            attributes
+                .push(new CognitoUserAttribute({Name: 'email', Value: 'user@gmail.com'}));
+            attributes
+                .push(new CognitoUserAttribute({Name: 'sub', Value: 'user_id'}));
+
+            return Promise.resolve(attributes);
         },
 
         currentAuthenticatedUser() {
@@ -187,7 +198,7 @@ describe('Cognito Service', () => {
 
     describe('confirmEmailAddress', () => {
         it('should return an error message in subscribe', fakeAsync(() => {
-            localStorage.setItem('email_signup', 'auth_user@gmail.com');
+            localStorage.setItem('email_address', 'auth_user@gmail.com');
 
             cognitoService
                 .confirmEmailAddress('error code')
@@ -198,8 +209,21 @@ describe('Cognito Service', () => {
                 .toHaveBeenCalledWith('auth_user@gmail.com', 'error code');
         }));
 
+        it('should return an error message in subscribe if not email address is set in localstorage', fakeAsync(() => {
+            localStorage.removeItem('email_address');
+
+            cognitoService
+                .confirmEmailAddress('error code')
+                .subscribe(err => expect(err).toBe('Invalid email or code, please try again.'));
+
+            tick(1);
+            expect(spyConfirmSignUp)
+                .not.toHaveBeenCalled();
+        }));
+
+
         it('should return undefined if successful', fakeAsync(() => {
-            localStorage.setItem('email_signup', 'auth_user@gmail.com');
+            localStorage.setItem('email_address', 'auth_user@gmail.com');
 
             cognitoService
                 .confirmEmailAddress('success')
@@ -232,17 +256,31 @@ describe('Cognito Service', () => {
 
     describe('resetPassword', () => {
         it('should return an error', fakeAsync(() => {
+            localStorage.setItem('email_address', 'bad@gmail.com');
             cognitoService
-                .resetPassword('bad@gmail.com', 'code', 'newpassword')
+                .resetPassword( 'code', 'newpassword')
                 .subscribe(err => expect(err).toBe('Error Message'));
             tick(1);
             expect(spyForgotPasswordSubmit)
                 .toHaveBeenCalledWith('bad@gmail.com', 'code', 'newpassword');
         }));
 
-        it('should return an undefined on success', fakeAsync(() => {
+        it('should return an error message if email is not set in local storage', fakeAsync(() => {
+            localStorage.removeItem('email_address');
             cognitoService
-                .resetPassword('good@gmail.com', 'code', 'newpassword')
+                .resetPassword( 'code', 'newpassword')
+                .subscribe(err => expect(err).toBe('Invalid email or code, please try again.'));
+            tick(1);
+            expect(spyForgotPasswordSubmit)
+                .not.toHaveBeenCalled();
+
+        }));
+
+        it('should return an undefined on success', fakeAsync(() => {
+            localStorage.setItem('email_address', 'good@gmail.com');
+
+            cognitoService
+                .resetPassword( 'code', 'newpassword')
                 .subscribe(err => expect(err).toBeUndefined());
             tick(1);
             expect(spyForgotPasswordSubmit)
@@ -276,14 +314,15 @@ describe('Cognito Service', () => {
         it('should return the latest cognito user', fakeAsync(() => {
             let counter = 0;
             const sub = cognitoService.user$.subscribe(user => {
+                console.log(user, 'actual user being returned');
                 counter += 1;
-                expect(user.email).toBe('auth_user@gmail.com');
-                expect(user.username).toBe('auth_user@gmail.com');
+                expect(user.email).toBe('user@gmail.com');
+                expect(user.id).toBe('user_id');
             });
 
-            cognitoService[ 'checkUserSubject' ].next();
+            cognitoService[ 'checkUserSubject' ].next(undefined);
             tick(1);
-            cognitoService[ 'checkUserSubject' ].next();
+            cognitoService[ 'checkUserSubject' ].next(undefined);
             tick(1);
 
             // Testing change until distinct is applied

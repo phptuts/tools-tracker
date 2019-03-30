@@ -1,6 +1,6 @@
 export interface User {
     email: string;
-    username: string;
+    id: string;
     attributes: Array<{key: string, value: string}>;
 }
 
