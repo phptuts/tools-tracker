@@ -21,7 +21,7 @@ export class CognitoService implements AuthService {
 
     public readonly user$: Observable<User> = merge<User | undefined>(
         this.checkUserSubject.asObservable(),
-        interval( 1000)
+        interval( 1000 * 60 * 60 * 2) // Every 2 hours check the jwt token.
     ).pipe(
         // currentAuthenticatedUser automatically handles the refresh stuff so we don't have to worry about it.
         switchMap(() => from(this.awsAuth.currentAuthenticatedUser())),
