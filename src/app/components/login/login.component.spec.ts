@@ -77,7 +77,7 @@ describe('LoginComponent', () => {
         component.submit();
         tick(1);
 
-        expect(routerSpy).toHaveBeenCalledWith([ 'tools' ]);
+        expect(routerSpy).toHaveBeenCalledWith([ '' ]);
         expect(authServiceSpy).toHaveBeenCalledWith('good@gmail.com', 'password');
         expect(component[ 'errorMessage' ]).toBe(undefined);
     }));
@@ -92,7 +92,7 @@ describe('LoginComponent', () => {
         component.submit();
         tick(1);
 
-        expect(routerSpy).not.toHaveBeenCalledWith([ 'tools' ]);
+        expect(routerSpy).not.toHaveBeenCalledWith([ '' ]);
         expect(authServiceSpy).toHaveBeenCalledWith('bad@gmail.com', 'password');
         expect(component[ 'errorMessage' ]).toBe('There was an error.');
     }));

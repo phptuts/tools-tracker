@@ -21,6 +21,9 @@ import { CognitoService } from './providers/cognito.service';
 import { LoginComponent } from './components/login/login.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import { MenuComponent } from './components/menu/menu.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 // AoT requires an exported function for factories
 
@@ -34,6 +37,9 @@ import { VerifyEmailComponent } from './components/verify-email/verify-email.com
         LoginComponent,
         SignUpComponent,
         VerifyEmailComponent,
+        MenuComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent,
     ],
     imports: [
         BrowserModule,

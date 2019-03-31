@@ -41,6 +41,6 @@ export class LoginComponent extends FormComponent {
     }
 
     public success(): void {
-        this.router.navigate([ 'tools' ]);
+        this.router.navigate(['']);
     }
 }

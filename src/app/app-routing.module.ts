@@ -4,6 +4,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import { AuthGuard } from './guard/auth.guard';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 export const routes: Routes = [
     {
@@ -23,8 +26,17 @@ export const routes: Routes = [
         component: VerifyEmailComponent
     },
     {
+       path: 'forgot-password',
+       component: ForgotPasswordComponent
+    },
+    {
+        path: 'reset-password',
+        component: ResetPasswordComponent
+    },
+    {
         path: '',
-        component: LoginComponent
+        component: HomeComponent,
+        canActivate: [AuthGuard]
     }
 ];
 

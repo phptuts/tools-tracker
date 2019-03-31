@@ -17,7 +17,7 @@ export abstract class AuthService {
 
     public abstract forgetPassword(email: string): Observable<undefined | string>;
 
-    public abstract resetPassword(email: string, code: string, newPassword: string): Observable<undefined|string>;
+    public abstract resetPassword(code: string, newPassword: string): Observable<undefined|string>;
 
     public abstract logout(): Observable<undefined>;
 
