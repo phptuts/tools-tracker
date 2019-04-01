@@ -7,41 +7,44 @@ import { VerifyEmailComponent } from './components/verify-email/verify-email.com
 import { AuthGuard } from './guard/auth.guard';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { NotLoggedInGuard } from './guard/not-logged-in.guard';
 
 export const routes: Routes = [
     {
-        path: 'tools',
-        component: HomeComponent
-    },
-    {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+        canActivate: [ NotLoggedInGuard ]
     },
     {
         path: 'sign-up',
-        component: SignUpComponent
+        component: SignUpComponent,
+        canActivate: [ NotLoggedInGuard ]
     },
     {
         path: 'verify-email',
-        component: VerifyEmailComponent
+        component: VerifyEmailComponent,
+        canActivate: [ NotLoggedInGuard ]
     },
     {
-       path: 'forgot-password',
-       component: ForgotPasswordComponent
+        path: 'forgot-password',
+        component: ForgotPasswordComponent,
+        canActivate: [ NotLoggedInGuard ]
     },
     {
         path: 'reset-password',
-        component: ResetPasswordComponent
+        component: ResetPasswordComponent,
+        canActivate: [ NotLoggedInGuard ]
     },
     {
         path: '',
         component: HomeComponent,
-        canActivate: [AuthGuard]
+        canActivate: [ AuthGuard ]
     }
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, {useHash: true})],
-    exports: [RouterModule]
+    imports: [ RouterModule.forRoot(routes, { useHash: true }) ],
+    exports: [ RouterModule ]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

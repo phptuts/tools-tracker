@@ -7,7 +7,7 @@ import { map, tap } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class NotLoggedInGuard implements CanActivate {
 
     constructor(private authService: AuthService, private router: Router) {}
 
@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
             .pipe(
                 map(user => user === undefined),
                 tap(userLoggedIn => {
-                    if (userLoggedIn) {
+                    if (!userLoggedIn) {
                         this.router.navigate(['']);
                     }
                 })
